@@ -24,10 +24,16 @@
 
 package ca.afontaine.ece422;
 
+import com.sun.deploy.util.StringUtils;
+
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * @author Andrew Fontaine
@@ -39,22 +45,47 @@ public class DataGenerator {
 	private static Random RAND = new Random();
 	private static int MIN = 1;
 	private static int MAX = 500;
+	private static String USAGE = "java DataGenerator <file name> <number of data points>";
 
 	public static void generateFile(String fileName, int num) {
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
 			writer.write(createValues(num));
+			writer.close();
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	public static String createValues(int num) {
-		StringBuilder string = new StringBuilder();
+		List<Integer> numbers = new ArrayList<>();
 		for(int i = 0; i < num; i++) {
-			string.append(RAND.nextInt(MAX));
-			string.append(',');
+			numbers.add(RAND.nextInt(MAX));
 		}
-		return string.toString();
+		return numbers.stream().map(Object::toString).collect(Collectors.joining(","));
+	}
+
+	public static void main(String[] args) {
+		if(args.length != 2) {
+			System.out.println(USAGE);
+			System.exit(1);
+		}
+		int num = 0;
+		try {
+			num = Integer.parseInt(args[1]);
+		}
+		catch(NumberFormatException e) {
+			System.err.println("Argument " + args[1] + " must be an integer.");
+			System.exit(1);
+		}
+		try {
+			File f = new File(args[0]);
+			f.getCanonicalPath();
+		}
+		catch(IOException e) {
+			System.err.println("Argument " + args[0] + " must be a valid filename");
+		}
+
+		generateFile(args[0], num);
 	}
 }
