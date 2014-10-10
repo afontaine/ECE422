@@ -1,6 +1,4 @@
 /*
- * The MIT License (MIT)
- *
  * Copyright (c) 2014 Andrew Fontaine
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,39 +20,24 @@
  * SOFTWARE.
  */
 
-package ca.afontaine.ece422;
+package ca.afontaine.ece422.test;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Random;
+import ca.afontaine.ece422.HeapSorter;
 
-/**
- * @author Andrew Fontaine
- * @version 1.0
- * @since 2014-10-08
- */
-public class DataGenerator {
+import static org.junit.Assert.*;
 
-	private static Random RAND = new Random();
-	private static int MIN = 1;
-	private static int MAX = 500;
+public class HeapSorterTest {
 
-	public static void generateFile(String fileName, int num) {
-		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
-			writer.write(createValues(num));
-		} catch(IOException e) {
-			e.printStackTrace();
-		}
+	int[] test;
+
+	@org.junit.Before
+	public void setUp() throws Exception {
+		test = new int[]{4, 1, 6, 2, 3, 5};
 	}
 
-	public static String createValues(int num) {
-		StringBuilder string = new StringBuilder();
-		for(int i = 0; i < num; i++) {
-			string.append(RAND.nextInt(MAX));
-			string.append(',');
-		}
-		return string.toString();
+	@org.junit.Test
+	public void testSort() throws Exception {
+		HeapSorter.sort(test);
+		assertArrayEquals(new int[]{1, 2, 3, 4, 5, 6}, test);
 	}
 }

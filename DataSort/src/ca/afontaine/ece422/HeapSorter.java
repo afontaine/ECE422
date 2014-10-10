@@ -1,6 +1,4 @@
 /*
- * The MIT License (MIT)
- *
  * Copyright (c) 2014 Andrew Fontaine
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,37 +22,57 @@
 
 package ca.afontaine.ece422;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Random;
-
 /**
- * @author Andrew Fontaine
+ * @author Andrew
  * @version 1.0
- * @since 2014-10-08
+ * @since 2014-10-09
  */
-public class DataGenerator {
+public class HeapSorter {
 
-	private static Random RAND = new Random();
-	private static int MIN = 1;
-	private static int MAX = 500;
 
-	public static void generateFile(String fileName, int num) {
-		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
-			writer.write(createValues(num));
-		} catch(IOException e) {
-			e.printStackTrace();
+	private static void siftDown(int[] heap, int start, int end) {
+		int child;
+		int swap;
+		int temp;
+		int root = start;
+
+		while(root * 2 + 1 <= end) {
+			child = root * 2 + 1;
+			swap = root;
+
+			if(heap[swap] < heap[child]) {
+				swap = child;
+			}
+			if((child + 1 <= end) && (heap[swap] < heap[child + 1])) {
+				swap = child + 1;
+			}
+			if(swap != root) {
+				temp = heap[swap];
+				heap[swap] = heap[root];
+				heap[root] = temp;
+				root = swap;
+			}
+			else {
+				return;
+			}
 		}
 	}
 
-	public static String createValues(int num) {
-		StringBuilder string = new StringBuilder();
-		for(int i = 0; i < num; i++) {
-			string.append(RAND.nextInt(MAX));
-			string.append(',');
+	private static void heapify(int[] heap) {
+		for(int start = (heap.length - 2) / 2; start >= 0; start--) {
+			siftDown(heap, start, heap.length - 1);
 		}
-		return string.toString();
+	}
+
+	public static void sort(int[] heap) {
+		int temp;
+
+		heapify(heap);
+		for(int end = heap.length - 1; end > 0; ) {
+			temp = heap[end];
+			heap[end] = heap[0];
+			heap[0] = temp;
+			siftDown(heap, 0, --end);
+		}
 	}
 }
