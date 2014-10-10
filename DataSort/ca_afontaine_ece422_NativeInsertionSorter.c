@@ -4,12 +4,20 @@
 
 JNIEXPORT void JNICALL Java_ca_afontaine_ece422_NativeInsertionSorter_sort
 	(JNIEnv *env, jclass klass, jintArray arr) {
+	int x;
+	int j;
+	int t;
 	jboolean is_copy;
 	jsize len = (*env)->GetArrayLength(env, arr);
 	jint *array = (*env)->GetIntArrayElements(env, arr, &is_copy);
 	// TODO: Sort the fucker
-	for(int i = 0; i < len; i++) {
-		printf("%d\n", array[i]);
+	for(int i = 1; i < len; i++) {
+		x = array[i];
+		j = i;
+		while((j > 0) && (array[j - 1] > x)) {
+			array[j] = array[--j];
+		}
+		array[j] = x;
 	}
 	(*env)->ReleaseIntArrayElements(env, arr, array, 0);
 }
