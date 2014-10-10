@@ -10,7 +10,6 @@ JNIEXPORT void JNICALL Java_ca_afontaine_ece422_NativeInsertionSorter_sort
 	jboolean is_copy;
 	jsize len = (*env)->GetArrayLength(env, arr);
 	jint *array = (*env)->GetIntArrayElements(env, arr, &is_copy);
-	// TODO: Sort the fucker
 	for(int i = 1; i < len; i++) {
 		x = array[i];
 		j = i;
