@@ -53,7 +53,8 @@ public class DataGenerator {
 			writer.write(createValues(num));
 			writer.close();
 		} catch(IOException e) {
-			e.printStackTrace();
+			System.err.println("Cannot write to file. Check your privilege, cis-het shitlord.");
+			System.exit(1);
 		}
 	}
 
