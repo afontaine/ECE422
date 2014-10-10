@@ -6,7 +6,6 @@ JNIEXPORT void JNICALL Java_ca_afontaine_ece422_NativeInsertionSorter_sort
 	(JNIEnv *env, jclass klass, jintArray arr) {
 	int x;
 	int j;
-	int t;
 	jboolean is_copy;
 	jsize len = (*env)->GetArrayLength(env, arr);
 	jint *array = (*env)->GetIntArrayElements(env, arr, &is_copy);
