@@ -25,9 +25,7 @@
 package ca.afontaine.ece422;
 
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,17 +42,6 @@ public class DataGenerator {
 	private static Random RAND = new Random();
 	private static int MAX = 500;
 	private static String USAGE = "java DataGenerator <file name> <number of data points>";
-
-	public static void generateFile(String fileName, int num) {
-		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
-			writer.write(createValues(num));
-			writer.close();
-		} catch(IOException e) {
-			System.err.println("Cannot write to file. Check your privilege, cis-het shitlord.");
-			System.exit(1);
-		}
-	}
 
 	public static String createValues(int num) {
 		List<Integer> numbers = new ArrayList<>();
@@ -85,6 +72,12 @@ public class DataGenerator {
 			System.err.println("Argument " + args[0] + " must be a valid filename");
 		}
 
-		generateFile(args[0], num);
+		try {
+			FileIO.write(args[0], createValues(num));
+		}
+		catch(IOException e) {
+			System.err.println("Cannot write to file. Check your privilege, cis-het shitlord.");
+			System.exit(1);
+		}
 	}
 }

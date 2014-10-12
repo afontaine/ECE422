@@ -1,7 +1,8 @@
 CLASSPATH = bin/
 
 
-NativeInsertionSorter.dll: *.o
+NativeInsertionSorter.dll: ca_afontaine_ece422_NativeInsertionSorter.o
+	mkdir lib
 	gcc -shared -o lib/$@ $^
 
 
@@ -20,4 +21,4 @@ NativeInsertionSorter: src/ca/afontaine/ece422/*.java
 PHONY: .clean
 
 clean:
-	rm -rf bin lib include
+	rm -r bin lib include
