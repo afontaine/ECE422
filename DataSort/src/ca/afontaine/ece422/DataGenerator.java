@@ -24,7 +24,6 @@
 
 package ca.afontaine.ece422;
 
-import com.sun.deploy.util.StringUtils;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -43,7 +42,6 @@ import java.util.stream.Collectors;
 public class DataGenerator {
 
 	private static Random RAND = new Random();
-	private static int MIN = 1;
 	private static int MAX = 500;
 	private static String USAGE = "java DataGenerator <file name> <number of data points>";
 
