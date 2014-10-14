@@ -21,4 +21,5 @@ NativeInsertionSorter: src/ca/afontaine/ece422/*.java
 PHONY: .clean
 
 clean:
-	rm -r bin lib include
+	rmdir /Q /S bin lib include
+	del *.o
