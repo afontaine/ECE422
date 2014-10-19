@@ -67,6 +67,7 @@ public class DataGenerator {
 		try {
 			File f = new File(args[0]);
 			f.getCanonicalPath();
+			f.delete();
 		}
 		catch(IOException e) {
 			System.err.println("Argument " + args[0] + " must be a valid filename");
@@ -77,6 +78,7 @@ public class DataGenerator {
 		}
 		catch(IOException e) {
 			System.err.println("Cannot write to file. Check your privilege, cis-het shitlord.");
+			new File(args[0]).delete();
 			System.exit(1);
 		}
 	}
