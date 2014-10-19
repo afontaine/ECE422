@@ -95,7 +95,7 @@ public class DataSorter {
 		return false;
 	}
 
-	private int[] execute(int[] arr) throws SortFailureException {
+	public int[] execute(int[] arr) throws SortFailureException {
 		int[] arrHeap = Arrays.copyOf(arr, arr.length);
 		int[] arrInsert = Arrays.copyOf(arr, arr.length);
 		if(executeHeap(arrHeap)) return arrHeap;
