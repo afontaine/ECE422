@@ -23,6 +23,8 @@
 package ca.afontaine.ece422;
 
 import java.io.*;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * @author Andrew
@@ -36,6 +38,10 @@ public class FileIO {
 		writer.write(nums);
 		writer.close();
 
+	}
+
+	public static void write(String file, int[] arr) throws IOException {
+		write(file, Arrays.stream(arr).mapToObj(Integer::toString).collect(Collectors.joining(",")));
 	}
 
 	public static String read(String file) throws IOException {

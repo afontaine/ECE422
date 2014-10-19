@@ -33,7 +33,7 @@ public class DataGeneratorTest {
 
 	@Test
 	public void testCreateValues() throws Exception {
-		String values = createValues(7);
-		assertEquals(7, values.split(",").length);
+		int[] values = createValues(7);
+		assertEquals(7, values.length);
 	}
 }

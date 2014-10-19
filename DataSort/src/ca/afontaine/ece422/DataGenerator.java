@@ -43,12 +43,12 @@ public class DataGenerator {
 	private static int MAX = 500;
 	private static String USAGE = "java DataGenerator <file name> <number of data points>";
 
-	public static String createValues(int num) {
+	public static int[] createValues(int num) {
 		List<Integer> numbers = new ArrayList<>();
 		for(int i = 0; i < num; i++) {
 			numbers.add(RAND.nextInt(MAX));
 		}
-		return numbers.stream().map(Object::toString).collect(Collectors.joining(","));
+		return numbers.stream().mapToInt(Integer::intValue).toArray();
 	}
 
 	public static void main(String[] args) {
