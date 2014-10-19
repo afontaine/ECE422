@@ -6,10 +6,14 @@ ifeq ($(OS),Windows_NT)
 $(info Building for Windows...)
 INC = win32
 TARGET = NativeInsertionSorter.dll
+RMDIR = rmdir /Q /S 
+RM = del
 else
 $(info Building for Linux...)
 INC = linux
 TARGET = libNativeInsertionSorter.so
+RMDIR = rm -r
+RM = rm
 endif
 
 all:DataSorter.jar DataGenerator.jar $(TARGET)
@@ -36,11 +40,11 @@ NativeInsertionSorter: src/ca/afontaine/ece422/*.java
 	mkdir bin
 	javac -d bin/ $^
 
-PHONY: .clean .configure
+PHONY: .clean
 
 clean:
-	rmdir /Q /S bin lib include
-	del *.o
-	del *.jar
+	$(RMDIR) bin lib include
+	$(RM) *.o
+	$(RM) *.jar
 
 
