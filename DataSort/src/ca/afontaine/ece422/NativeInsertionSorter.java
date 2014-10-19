@@ -23,7 +23,7 @@
 package ca.afontaine.ece422;
 
 /**
- * @author Andrew
+ * @author Andrew Fontaine
  * @version 1.0
  * @since 2014-10-09
  */
@@ -34,5 +34,5 @@ public class NativeInsertionSorter {
 	}
 
 
-	native public static void sort(int[] array);
+	native public static int sort(int[] array);
 }

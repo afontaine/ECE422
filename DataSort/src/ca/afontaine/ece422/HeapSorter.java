@@ -23,56 +23,77 @@
 package ca.afontaine.ece422;
 
 /**
- * @author Andrew
+ * @author Andrew Fontaine
  * @version 1.0
  * @since 2014-10-09
  */
 public class HeapSorter {
 
 
-	private static void siftDown(int[] heap, int start, int end) {
+	private static int siftDown(int[] heap, int start, int end) {
+		int mem = 0;
 		int child;
 		int swap;
 		int temp;
 		int root = start;
+		mem += 4;
 
 		while(root * 2 + 1 <= end) {
+			mem += 2;
 			child = root * 2 + 1;
 			swap = root;
-
+			mem += 4;
 			if(heap[swap] < heap[child]) {
 				swap = child;
+				mem += 2;
 			}
+			mem += 2;
 			if((child + 1 <= end) && (heap[swap] < heap[child + 1])) {
 				swap = child + 1;
+				mem += 2;
 			}
+			mem += 6;
+
 			if(swap != root) {
 				temp = heap[swap];
 				heap[swap] = heap[root];
 				heap[root] = temp;
 				root = swap;
+				mem += 12;
 			}
 			else {
-				return;
+				mem += 2;
+				return mem;
 			}
+			mem +=2;
 		}
+		return mem;
 	}
 
-	private static void heapify(int[] heap) {
+	private static int heapify(int[] heap) {
+		int mem = 0;
 		for(int start = (heap.length - 2) / 2; start >= 0; start--) {
-			siftDown(heap, start, heap.length - 1);
+			mem += 3;
+			mem += siftDown(heap, start, heap.length - 1);
 		}
+		mem += 3;
+		return mem;
 	}
 
-	public static void sort(int[] heap) {
+	public static int sort(int[] heap) {
 		int temp;
+		int mem = 1;
 
-		heapify(heap);
+		mem += heapify(heap);
 		for(int end = heap.length - 1; end > 0; ) {
+			mem += 1;
 			temp = heap[end];
 			heap[end] = heap[0];
 			heap[0] = temp;
 			siftDown(heap, 0, --end);
+			mem += 11;
 		}
+		mem += 3;
+		return mem;
 	}
 }

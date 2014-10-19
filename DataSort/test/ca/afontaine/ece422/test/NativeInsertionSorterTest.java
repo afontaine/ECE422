@@ -39,7 +39,8 @@ public class NativeInsertionSorterTest {
 
 	@Test
 	public void testSort() throws Exception {
-		NativeInsertionSorter.sort(test);
+
+		assertTrue(NativeInsertionSorter.sort(test) > 0);
 		assertArrayEquals(new int[]{1, 2, 3, 4, 5, 6}, test);
 	}
 }

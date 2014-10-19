@@ -37,7 +37,7 @@ public class HeapSorterTest {
 
 	@org.junit.Test
 	public void testSort() throws Exception {
-		HeapSorter.sort(test);
+		assertTrue(HeapSorter.sort(test) > 0);
 		assertArrayEquals(new int[]{1, 2, 3, 4, 5, 6}, test);
 	}
 }
