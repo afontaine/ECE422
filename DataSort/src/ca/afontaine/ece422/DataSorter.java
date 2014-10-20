@@ -24,7 +24,6 @@ package ca.afontaine.ece422;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Timer;
@@ -39,15 +38,17 @@ public class DataSorter {
 
 	private static ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
 	private static Timer TIMER = new Timer();
-	private static String USAGE = "<input file> <output file> <error probability> <time limit>";
+	private static String USAGE = "<input file> <output file> <error probability for heap> <error probability for insertion> <time limit>";
 	private static Random RANDOM = new Random();
 
+	private double errInsertion;
 	private int time;
-	private double err;
+	private double errHeap;
 
-	public DataSorter(int time, double err) {
+	public DataSorter(int time, double errHeap, double errInsertion) {
 		this.time = time;
-		this.err = err;
+		this.errHeap = errHeap;
+		this.errInsertion = errInsertion;
 	}
 
 	private boolean executeHeap(int[] arr) {
@@ -56,7 +57,7 @@ public class DataSorter {
 		try {
 			int memory = heapSort.get();
 			double hazard = RANDOM.nextDouble();
-			if(hazard > 0.5 && hazard < 0.5 + err * memory) {
+			if(hazard > 0.5 && hazard < 0.5 + errHeap * memory) {
 				System.err.println("Heap sort failed due to memory errors.");
 				return false;
 			}
@@ -78,7 +79,7 @@ public class DataSorter {
 		try {
 			int memory = insertionSort.get();
 			double hazard = RANDOM.nextDouble();
-			if(hazard > 0.5 && hazard < 0.5 + err * memory) {
+			if(hazard > 0.5 && hazard < 0.5 + errInsertion * memory) {
 				System.err.println("Insertion sort failed due to memory errors.");
 				return false;
 			}
@@ -112,25 +113,33 @@ public class DataSorter {
 		String fileIn = args[0];
 		String fileOut = args[1];
 		int time = 0;
-		double err = 0.0;
+		double errHeap = 0.0;
+		double errInsertion = 0.0;
 		String line = "";
 		int[] arr = new int[] {};
 		try {
-			err = Double.parseDouble(args[2]);
+			errHeap = Double.parseDouble(args[2]);
 		}
 		catch(NumberFormatException e) {
 			System.err.println("Argument: " + args[2] + " must be a decimal value.");
 			System.exit(1);
 		}
 		try {
-			time = Integer.parseInt(args[3]);
+			errInsertion = Double.parseDouble(args[3]);
+		}
+		catch(NumberFormatException e) {
+			System.err.println("Argument: " + args[3] + " must be a decimal value.");
+			System.exit(1);
+		}
+		try {
+			time = Integer.parseInt(args[4]);
 			if(time < 1) {
-				System.err.println("Argument: " + args[3] + " must be greater than 0.");
+				System.err.println("Argument: " + args[4] + " must be greater than 0.");
 				System.exit(1);
 			}
 		}
 		catch(NumberFormatException e) {
-			System.err.println("Argument: " + args[3] + " must be an integer value.");
+			System.err.println("Argument: " + args[4] + " must be an integer value.");
 			System.exit(1);
 		}
 		try {
@@ -156,7 +165,7 @@ public class DataSorter {
 			System.err.println(args[0] + " is not a file containing comma-separated integer values.");
 		}
 		try {
-			FileIO.write(args[1], new DataSorter(time, err).execute(arr));
+			FileIO.write(args[1], new DataSorter(time, errHeap, errInsertion).execute(arr));
 		}
 		catch(SortFailureException e) {
 			System.err.println(e.getMessage());
