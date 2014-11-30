@@ -20,28 +20,33 @@
  * SOFTWARE.
  */
 
-package ca.afontaine.ece422.test;
+package ca.afontaine.ece422;
 
-import ca.afontaine.ece422.NativeInsertionSorter;
-import org.junit.Before;
-import org.junit.Test;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertTrue;
+/**
+ * @author Andrew Fontaine
+ * @version 1.0
+ * @since 2014-11-30
+ */
+public class ClientView {
 
-public class NativeInsertionSorterTest {
+    BufferedReader readIn;
+    ClientController controller;
 
-	int[] test;
+    private String getLine() {
+        System.out.print("$ ");
+        try {
+            return readIn.readLine();
+        } catch (IOException e) {
+            System.out.println("An error occurred reading the command");
+            return null;
+        }
+    }
 
-	@Before
-	public void setUp() throws Exception {
-		test = new int[]{4, 1, 6, 2, 3, 5};
-	}
-
-	@Test
-	public void testSort() throws Exception {
-
-		assertTrue(NativeInsertionSorter.sort(test) > 0);
-		assertArrayEquals(new int[]{1, 2, 3, 4, 5, 6}, test);
-	}
+    public ClientView() {
+        readIn = new BufferedReader(new InputStreamReader(System.in));
+    }
 }

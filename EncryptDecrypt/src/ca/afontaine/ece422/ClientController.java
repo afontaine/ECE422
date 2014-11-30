@@ -22,6 +22,12 @@
 
 package ca.afontaine.ece422;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.nio.ByteBuffer;
 
 /**
@@ -30,37 +36,48 @@ import java.nio.ByteBuffer;
  * @since 2014-11-30
  */
 public class ClientController {
+    static int PORT = 16000;
 
     Client client;
     Cryptographer crypt;
+    Socket sock;
+    DataInputStream in;
+    DataOutputStream out;
 
 
     public ClientController(Client client) {
         this.client = client;
         crypt = new Cryptographer(client.getKey());
+        sock = new Socket();
     }
 
     public ByteBuffer createLoginMessage() {
-        long[] message = ByteBuffer.wrap(client.getUser().getBytes()).asLongBuffer().array();
-        crypt.encryptMessage(message, client.getKey());
-        ByteBuffer out = ByteBuffer.allocate(message.length * 4);
-        out.asLongBuffer().put(message);
-        return out;
+        ByteBuffer message = ByteBuffer.wrap(client.getUser().getBytes());
+        crypt.encryptMessage(message.asLongBuffer().array(), client.getKey());
+        return message;
     }
 
-    public ByteBuffer encryptData(ByteBuffer buffer) {
-        long[] message = buffer.asLongBuffer().array();
-        crypt.encryptMessage(message, client.getKey());
-        ByteBuffer out = ByteBuffer.allocate(message.length * 4);
-        out.asLongBuffer().put(message);
-        return out;
+    public void encryptData(ByteBuffer buffer) {
+        crypt.encryptMessage(buffer.asLongBuffer().array(), client.getKey());
     }
 
-    public ByteBuffer decryptData(ByteBuffer buffer) {
-        long[] message = buffer.asLongBuffer().array();
-        crypt.decryptMessage(message, client.getKey());
-        ByteBuffer out = ByteBuffer.allocate(message.length * 4);
-        out.asLongBuffer().put(message);
-        return out;
+    public void decryptData(ByteBuffer buffer) {
+        crypt.decryptMessage(buffer.asLongBuffer().array(), client.getKey());
+    }
+
+    public void connectSocket(String addr) throws IOException {
+        sock.connect(new InetSocketAddress(addr, PORT));
+        in = new DataInputStream(sock.getInputStream());
+        out = new DataOutputStream(sock.getOutputStream());
+    }
+
+    public void sendMessage(ByteBuffer buffer) throws IOException {
+        out.write(buffer.array());
+    }
+
+    public ByteBuffer recieveMessage() throws IOException {
+        ByteBuffer buf = ByteBuffer.allocate(2 * Long.BYTES);
+        in.read(buf.array());
+        return buf;
     }
 }

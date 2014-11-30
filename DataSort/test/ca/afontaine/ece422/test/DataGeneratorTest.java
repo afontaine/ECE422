@@ -27,7 +27,7 @@ package ca.afontaine.ece422.test;
 import org.junit.Test;
 
 import static ca.afontaine.ece422.DataGenerator.createValues;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class DataGeneratorTest {
 

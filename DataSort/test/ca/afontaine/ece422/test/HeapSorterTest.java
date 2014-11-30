@@ -24,7 +24,8 @@ package ca.afontaine.ece422.test;
 
 import ca.afontaine.ece422.HeapSorter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertTrue;
 
 public class HeapSorterTest {
 
