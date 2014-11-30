@@ -39,7 +39,6 @@ public class ClientController {
     static int PORT = 16000;
 
     Client client;
-    Cryptographer crypt;
     Socket sock;
     DataInputStream in;
     DataOutputStream out;
@@ -47,22 +46,21 @@ public class ClientController {
 
     public ClientController(Client client) {
         this.client = client;
-        crypt = new Cryptographer(client.getKey());
         sock = new Socket();
     }
 
     public ByteBuffer createLoginMessage() {
         ByteBuffer message = ByteBuffer.wrap(client.getUser().getBytes());
-        crypt.encryptMessage(message.asLongBuffer().array(), client.getKey());
+        Cryptographer.encryptMessage(message.asLongBuffer().array(), client.getKey());
         return message;
     }
 
     public void encryptData(ByteBuffer buffer) {
-        crypt.encryptMessage(buffer.asLongBuffer().array(), client.getKey());
+        Cryptographer.encryptMessage(buffer.asLongBuffer().array(), client.getKey());
     }
 
     public void decryptData(ByteBuffer buffer) {
-        crypt.decryptMessage(buffer.asLongBuffer().array(), client.getKey());
+        Cryptographer.decryptMessage(buffer.asLongBuffer().array(), client.getKey());
     }
 
     public void connectSocket(String addr) throws IOException {

@@ -29,17 +29,11 @@ package ca.afontaine.ece422;
  */
 public class Cryptographer {
 
-    private long[] key;
-
     static {
         System.loadLibrary("Cryptographer");
     }
 
-    public Cryptographer(long[] key) {
-        this.key = key;
-    }
-
-    native public void encryptMessage(long[] value, long[] key);
-    native public void decryptMessage(long[] value, long[] key);
+    native static public void encryptMessage(long[] value, long[] key);
+    native static public void decryptMessage(long[] value, long[] key);
 
 }
