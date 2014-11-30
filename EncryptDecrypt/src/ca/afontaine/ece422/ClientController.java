@@ -25,7 +25,6 @@ package ca.afontaine.ece422;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
@@ -47,6 +46,10 @@ public class ClientController {
     public ClientController(Client client) {
         this.client = client;
         sock = new Socket();
+    }
+
+    public Client getClient() {
+        return client;
     }
 
     public ByteBuffer createLoginMessage() {
@@ -73,9 +76,13 @@ public class ClientController {
         out.write(buffer.array());
     }
 
-    public ByteBuffer recieveMessage() throws IOException {
-        ByteBuffer buf = ByteBuffer.allocate(2 * Long.BYTES);
-        in.read(buf.array());
+    public ByteBuffer recieveMessage(int size) throws IOException {
+        ByteBuffer buf = ByteBuffer.allocate(size);
+        in.readFully(buf.array());
         return buf;
+    }
+
+    public void close() throws IOException {
+        sock.close();
     }
 }

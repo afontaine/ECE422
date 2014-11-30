@@ -31,6 +31,9 @@ import java.util.HashMap;
  */
 public class Server {
 
+    public static String ACK = "ack";
+    public static String FILE_NOT_FOUND = "fnf";
+
     HashMap<String, Long[]> users;
 
 }

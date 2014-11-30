@@ -33,7 +33,7 @@ public class Cryptographer {
         System.loadLibrary("Cryptographer");
     }
 
-    native static public void encryptMessage(long[] value, long[] key);
-    native static public void decryptMessage(long[] value, long[] key);
+    static public void encryptMessage(long[] value, long[] key) {}
+    static public void decryptMessage(long[] value, long[] key) {}
 
 }
