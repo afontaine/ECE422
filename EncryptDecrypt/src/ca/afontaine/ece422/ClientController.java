@@ -40,10 +40,12 @@ public class ClientController {
         crypt = new Cryptographer(client.getKey());
     }
 
-    public long[] createLoginMessage() {
+    public ByteBuffer createLoginMessage() {
         long[] message = ByteBuffer.wrap(client.getUser().getBytes()).asLongBuffer().array();
         crypt.encryptMessage(message, client.getKey());
-        return message;
+        ByteBuffer out = ByteBuffer.allocate(message.length * 4);
+        out.asLongBuffer().put(message);
+        return out;
     }
 
     public ByteBuffer encryptData(ByteBuffer buffer) {
