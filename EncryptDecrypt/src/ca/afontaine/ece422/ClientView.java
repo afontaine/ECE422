@@ -23,11 +23,6 @@
 package ca.afontaine.ece422;
 
 import java.io.*;
-import java.nio.ByteBuffer;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 
 /**
@@ -52,10 +47,6 @@ public class ClientView {
         }
     }
 
-    private boolean compareBufferWithAck(ByteBuffer message) {
-        return new String(message.asCharBuffer().array()).equals("ack");
-    }
-
     public ClientView(String user, long[] key, String addr) throws IOException {
         readIn = new BufferedReader(new InputStreamReader(System.in));
         controller = new ClientController(new Client(user, key));
@@ -64,16 +55,7 @@ public class ClientView {
 
     public void run() {
         try {
-            ByteBuffer login = controller.createLoginMessage();
-            controller.encryptData(login);
-            controller.sendMessage(login);
-
-            login = controller.recieveMessage(2 * Long.BYTES);
-            controller.decryptData(login);
-            if(!compareBufferWithAck(login)) {
-                System.err.println("Could not log in. Credentials were wrong.");
-                return;
-            }
+            if (!controller.login()) return;
         } catch (IOException e) {
             System.err.println("Could not log in");
             return;
@@ -81,27 +63,7 @@ public class ClientView {
         String line = "";
         while(!line.equals("finished")) {
             line = getLine();
-            ByteBuffer sending = ByteBuffer.wrap(line.getBytes());
-            controller.encryptData(sending);
-            try {
-                controller.sendMessage(sending);
-                ByteBuffer receiving = controller.recieveMessage(2 * Long.BYTES);
-                controller.decryptData(receiving);
-                if(compareBufferWithAck(receiving)) {
-                    if(line.equals("finished"))
-                        continue;
-                    receiving = controller.recieveMessage(2 * Long.BYTES);
-                    controller.decryptData(receiving);
-                    receiving = controller.recieveMessage(2 * Long.BYTES * receiving.asIntBuffer().get());
-                    controller.decryptData(receiving);
-                    new DataOutputStream(new FileOutputStream(line, false)).write(receiving.array());
-                }
-                else {
-                    System.err.println("File not found on server");
-                }
-            } catch (IOException e) {
-                System.err.println("Unable to connect to server");
-            }
+            controller.processLine(line);
 
         }
         try {

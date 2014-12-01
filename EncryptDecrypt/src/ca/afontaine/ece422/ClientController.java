@@ -24,6 +24,7 @@ package ca.afontaine.ece422;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -84,5 +85,47 @@ public class ClientController {
 
     public void close() throws IOException {
         sock.close();
+    }
+
+    private boolean compareBufferWithAck(ByteBuffer message) {
+        return new String(message.asCharBuffer().array()).equals("ack");
+    }
+
+    public void processLine(String line) {
+        ByteBuffer sending = ByteBuffer.wrap(line.getBytes());
+        encryptData(sending);
+        try {
+            sendMessage(sending);
+            ByteBuffer receiving = recieveMessage(2 * Long.BYTES);
+            decryptData(receiving);
+            if(compareBufferWithAck(receiving)) {
+                if(line.equals("finished"))
+                    return;
+                receiving = recieveMessage(2 * Long.BYTES);
+                decryptData(receiving);
+                receiving = recieveMessage(2 * Long.BYTES * receiving.asIntBuffer().get());
+                decryptData(receiving);
+                new DataOutputStream(new FileOutputStream(line, false)).write(receiving.array());
+            }
+            else {
+                System.err.println("File not found on server");
+            }
+        } catch (IOException e) {
+            System.err.println("Unable to connect to server");
+        }
+    }
+
+    public boolean login() throws IOException {
+        ByteBuffer login = createLoginMessage();
+        encryptData(login);
+        sendMessage(login);
+
+        login = recieveMessage(2 * Long.BYTES);
+        decryptData(login);
+        if(!compareBufferWithAck(login)) {
+            System.err.println("Could not log in. Credentials were wrong.");
+            return false;
+        }
+        return true;
     }
 }
