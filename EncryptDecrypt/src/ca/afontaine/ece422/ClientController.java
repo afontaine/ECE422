@@ -88,7 +88,7 @@ public class ClientController {
     }
 
     private boolean compareBufferWithAck(ByteBuffer message) {
-        return new String(message.asCharBuffer().array()).equals("ack");
+        return new String(message.asCharBuffer().array()).equals(Server.ACK);
     }
 
     public void processLine(String line) {

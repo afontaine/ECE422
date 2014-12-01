@@ -35,10 +35,24 @@ public class Cryptographer {
         System.loadLibrary("Cryptographer");
     }
 
-    static public void encrypt(ByteBuffer value, long[] key) {}
-    static public void decrypt(ByteBuffer value, long[] key) {}
+    static public void encrypt(ByteBuffer value, long[] key) {
+        if(value.limit() % (2 * Long.BYTES) != 0) {
+            ByteBuffer newBuffer = ByteBuffer.allocate(value.limit()
+                    + ((2 * Long.BYTES) - (value.limit() % (2 * Long.BYTES))));
+            for(int i = 0; i < newBuffer.limit(); i++)
+                newBuffer.put((byte) 0);
+            newBuffer.position(0);
+            newBuffer.put(value.array());
+            value = newBuffer;
+        }
+        encryptMessage(value.array(), key);
+    }
 
-    native static private void encryptMessage(long[] value, long[] key);
-    native static private void decryptMessage(long[] value, long[] key);
+    static public void decrypt(ByteBuffer value, long[] key) {
+        decryptMessage(value.array(), key);
+    }
+
+    native static private void encryptMessage(byte[] value, long[] key);
+    native static private void decryptMessage(byte[] value, long[] key);
 
 }
