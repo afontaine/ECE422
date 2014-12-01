@@ -88,7 +88,7 @@ public class ClientController {
     }
 
     private boolean compareBufferWithAck(ByteBuffer message) {
-        return new String(message.asCharBuffer().array()).equals(Server.ACK);
+        return new String(message.array()).equals(Server.ACK);
     }
 
     public void processLine(String line) {
@@ -103,7 +103,7 @@ public class ClientController {
                     return;
                 receiving = recieveMessage(2 * Long.BYTES);
                 decryptData(receiving);
-                receiving = recieveMessage(2 * Long.BYTES * receiving.asIntBuffer().get());
+                receiving = recieveMessage(2 * Long.BYTES * receiving.getInt());
                 decryptData(receiving);
                 new DataOutputStream(new FileOutputStream(line, false)).write(receiving.array());
             }

@@ -1,4 +1,6 @@
 /*
+ * The MIT License (MIT)
+ *
  * Copyright (c) 2014 Andrew Fontaine
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,42 +26,34 @@ package ca.afontaine.ece422;
 
 import java.nio.ByteBuffer;
 
-/**
- * @author Andrew Fontaine
- * @version 1.0
- * @since 2014-11-24
- */
-public class Cryptographer {
+import static org.junit.Assert.*;
 
-    static {
-        System.loadLibrary("Cryptographer");
-    }
+public class CryptographerTest {
 
-    static public ByteBuffer encrypt(ByteBuffer value, long[] key) {
-        ByteBuffer newBuffer = ByteBuffer.allocate(value.limit()
-                + Integer.BYTES + ((2 * Long.BYTES) - ((value.limit() + Integer.BYTES) % (2 * Long.BYTES))));
-        for(int i = 0; i < newBuffer.limit(); i++)
-            newBuffer.put((byte) 0);
-        newBuffer.position(0);
-        newBuffer.putInt(value.limit());
-        newBuffer.put(value.array());
-        value = newBuffer;
-        encryptMessage(value.array(), key);
-        return value;
-    }
+    private long[] key = {5L, 4L, 17L, 1231242141253L};
+    private String data = "HelloWorld";
 
-    static public ByteBuffer decrypt(ByteBuffer value, long[] key) {
-        decryptMessage(value.array(), key);
-        value.position(0);
-        int size = value.getInt();
-        ByteBuffer message = ByteBuffer.allocate(size);
-        message.put(value.array(), Integer.BYTES, size);
-        message.position(0);
-        return message;
+    @org.junit.Before
+    public void setUp() throws Exception {
 
     }
 
-    native static private void encryptMessage(byte[] value, long[] key);
-    native static private void decryptMessage(byte[] value, long[] key);
+    @org.junit.After
+    public void tearDown() throws Exception {
 
+    }
+
+    @org.junit.Test
+    public void testEncrypt() throws Exception {
+        ByteBuffer message = ByteBuffer.wrap(data.getBytes());
+        message = Cryptographer.encrypt(message, key);
+        message = Cryptographer.decrypt(message, key);
+        assertEquals(data, new String(message.array()));
+
+    }
+
+    @org.junit.Test
+    public void testDecrypt() throws Exception {
+
+    }
 }

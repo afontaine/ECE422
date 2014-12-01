@@ -57,7 +57,7 @@ JNIEXPORT void JNICALL Java_ca_afontaine_ece422_Cryptographer_decryptMessage
 	jlong *k = (*env)->GetLongArrayElements(env, key, &is_copy_key);
 	long *i = (long *) arr;
 	while((jbyte *) i < arr + len) {
-		encrypt(i, (long *)k);
+		decrypt(i, (long *)k);
 		i += 2;
 	}
 	(*env)->ReleaseByteArrayElements(env, value, arr, is_copy_value);
