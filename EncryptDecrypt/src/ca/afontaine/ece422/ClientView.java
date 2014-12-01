@@ -22,14 +22,13 @@
 
 package ca.afontaine.ece422;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 
 /**
  * @author Andrew Fontaine
@@ -37,6 +36,8 @@ import java.nio.file.StandardOpenOption;
  * @since 2014-11-30
  */
 public class ClientView {
+
+    static private String USAGE = "<IP of server> <username> <key>";
 
     BufferedReader readIn;
     ClientController controller;
@@ -51,6 +52,10 @@ public class ClientView {
         }
     }
 
+    private boolean compareBufferWithAck(ByteBuffer message) {
+        return new String(message.asCharBuffer().array()).equals("ack");
+    }
+
     public ClientView(String user, long[] key, String addr) throws IOException {
         readIn = new BufferedReader(new InputStreamReader(System.in));
         controller = new ClientController(new Client(user, key));
@@ -58,6 +63,21 @@ public class ClientView {
     }
 
     public void run() {
+        try {
+            ByteBuffer login = controller.createLoginMessage();
+            controller.encryptData(login);
+            controller.sendMessage(login);
+
+            login = controller.recieveMessage(2 * Long.BYTES);
+            controller.decryptData(login);
+            if(!compareBufferWithAck(login)) {
+                System.err.println("Could not log in. Credentials were wrong.");
+                return;
+            }
+        } catch (IOException e) {
+            System.err.println("Could not log in");
+            return;
+        }
         String line = "";
         while(!line.equals("finished")) {
             line = getLine();
@@ -65,14 +85,16 @@ public class ClientView {
             controller.encryptData(sending);
             try {
                 controller.sendMessage(sending);
-                ByteBuffer receiving = controller.recieveMessage(3 * Character.BYTES);
-                if(new String(receiving.asCharBuffer().array()).equals("ack")) {
+                ByteBuffer receiving = controller.recieveMessage(2 * Long.BYTES);
+                controller.decryptData(receiving);
+                if(compareBufferWithAck(receiving)) {
                     if(line.equals("finished"))
                         continue;
-                    Path receivingFile = Paths.get(line);
-                    receiving = controller.recieveMessage(2*Long.BYTES);
+                    receiving = controller.recieveMessage(2 * Long.BYTES);
                     controller.decryptData(receiving);
-                    Files.write(receivingFile, receiving.array(), StandardOpenOption.APPEND);
+                    receiving = controller.recieveMessage(2 * Long.BYTES * receiving.asIntBuffer().get());
+                    controller.decryptData(receiving);
+                    new DataOutputStream(new FileOutputStream(line, false)).write(receiving.array());
                 }
                 else {
                     System.err.println("File not found on server");
@@ -87,5 +109,23 @@ public class ClientView {
         } catch (IOException e) {
             System.err.println("Could not close connection");
         }
+    }
+
+    public static void main(String[] args) {
+        if(args.length < 3) {
+            System.err.println(USAGE);
+            System.exit(1);
+        }
+
+        long[] key = Arrays.stream(args[2].split(",")).mapToLong(Long::parseLong).toArray();
+        try {
+            ClientView view = new ClientView(args[1], key, args[0]);
+            view.run();
+            System.exit(0);
+        } catch (IOException e) {
+            System.err.println("Cannot connect to server.");
+            System.exit(1);
+        }
+
     }
 }

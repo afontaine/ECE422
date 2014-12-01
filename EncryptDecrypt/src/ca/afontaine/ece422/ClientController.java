@@ -54,16 +54,16 @@ public class ClientController {
 
     public ByteBuffer createLoginMessage() {
         ByteBuffer message = ByteBuffer.wrap(client.getUser().getBytes());
-        Cryptographer.encryptMessage(message.asLongBuffer().array(), client.getKey());
+        Cryptographer.encrypt(message, client.getKey());
         return message;
     }
 
     public void encryptData(ByteBuffer buffer) {
-        Cryptographer.encryptMessage(buffer.asLongBuffer().array(), client.getKey());
+        Cryptographer.encrypt(buffer, client.getKey());
     }
 
     public void decryptData(ByteBuffer buffer) {
-        Cryptographer.decryptMessage(buffer.asLongBuffer().array(), client.getKey());
+        Cryptographer.decrypt(buffer, client.getKey());
     }
 
     public void connectSocket(String addr) throws IOException {

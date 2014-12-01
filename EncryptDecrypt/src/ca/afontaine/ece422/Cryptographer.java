@@ -22,6 +22,8 @@
 
 package ca.afontaine.ece422;
 
+import java.nio.ByteBuffer;
+
 /**
  * @author Andrew Fontaine
  * @version 1.0
@@ -33,7 +35,10 @@ public class Cryptographer {
         System.loadLibrary("Cryptographer");
     }
 
-    static public void encryptMessage(long[] value, long[] key) {}
-    static public void decryptMessage(long[] value, long[] key) {}
+    static public void encrypt(ByteBuffer value, long[] key) {}
+    static public void decrypt(ByteBuffer value, long[] key) {}
+
+    native static private void encryptMessage(long[] value, long[] key);
+    native static private void decryptMessage(long[] value, long[] key);
 
 }
