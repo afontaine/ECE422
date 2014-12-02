@@ -24,14 +24,12 @@ package ca.afontaine.ece422;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.FileOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.LongSummaryStatistics;
 
 /**
  * @author Andrew Fontaine
@@ -70,15 +68,15 @@ public class ClientController extends Controller {
             sendMessage(size);
             sendMessage(sending);
             ByteBuffer receiving = receiveMessage(2 * Long.BYTES);
-            receiving = decryptData(receiving, false);
+            receiving = decryptData(receiving);
             if(compareBufferWithAck(receiving)) {
                 if(line.equals("finished"))
                     return;
                 receiving = receiveMessage(2 * Long.BYTES);
-                receiving = decryptData(receiving, false);
+                receiving = decryptData(receiving);
                 receiving = receiveMessage(Long.BYTES * receiving.getInt());
-                receiving = decryptData(receiving, false);
-                Files.write(Paths.get(line), receiving.array());
+                receiving = decryptData(receiving);
+                Files.write(Paths.get(new File(line).getName()), receiving.array());
             }
             else {
                 System.err.println("File not found on server");
@@ -93,7 +91,7 @@ public class ClientController extends Controller {
         sendMessage(login);
 
         login = receiveMessage(2 * Long.BYTES);
-        login = decryptData(login, false);
+        login = decryptData(login);
         if(!compareBufferWithAck(login)) {
             System.err.println("Could not log in. Credentials were wrong.");
             return false;

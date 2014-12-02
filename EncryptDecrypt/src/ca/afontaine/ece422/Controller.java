@@ -86,8 +86,8 @@ public class Controller {
         return Cryptographer.encrypt(buffer, client.getKey());
     }
 
-    public ByteBuffer decryptData(ByteBuffer buffer, boolean keyMatch) {
-        return Cryptographer.decrypt(buffer, client.getKey(), keyMatch);
+    public ByteBuffer decryptData(ByteBuffer buffer) {
+        return Cryptographer.decrypt(buffer, client.getKey());
     }
 
     public void sendMessage(ByteBuffer buffer) throws IOException {

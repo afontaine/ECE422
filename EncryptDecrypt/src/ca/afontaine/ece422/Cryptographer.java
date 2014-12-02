@@ -48,13 +48,13 @@ public class Cryptographer {
         return value;
     }
 
-    static public ByteBuffer decrypt(ByteBuffer value, long[] key, boolean keyMatch) {
+    static public ByteBuffer decrypt(ByteBuffer value, long[] key) {
         ByteBuffer newBuffer = ByteBuffer.allocate(value.limit());
         newBuffer.put(value.array());
         decryptMessage(newBuffer.array(), key);
         newBuffer.position(0);
         int size = newBuffer.getInt();
-        if(keyMatch && size > 2 * Long.BYTES) {
+        if(size > value.limit()) {
             return ByteBuffer.allocate(0);
         }
         byte[] mess = new byte[size];

@@ -65,7 +65,9 @@ public class ClientView {
         }
         String line = "";
         while(!line.equals("finished")) {
-            line = getLine();
+            line = "";
+            while(line.isEmpty())
+                line = getLine();
             controller.processLine(line);
 
         }

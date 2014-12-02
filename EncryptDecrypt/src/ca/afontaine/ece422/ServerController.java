@@ -28,6 +28,7 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
@@ -62,10 +63,10 @@ public class ServerController extends Controller implements Runnable {
             ByteBuffer message = receiveMessage(2 * Long.BYTES);
             for(long[] key : server.getUsers().keySet()) {
                 setClient(new Client(server.getUsers().get(key), key));
-                if(server.getUsers().containsValue(new String(decryptData(message, true).array()))) {
-                    sendMessage(encryptData(ByteBuffer.wrap(Server.ACK.getBytes())));
+                if(server.getUsers().containsValue(new String(decryptData(message).array()))) {
+                    sendAck();
                     processCommands();
-                    break;
+                    return;
                 }
             }
             sendMessage(ByteBuffer.wrap("User not found".getBytes()));
@@ -75,30 +76,45 @@ public class ServerController extends Controller implements Runnable {
     }
 
     private void processCommands() {
-        String line = "";
-        while(!line.equals("finished")) {
+        String filename = "";
+        while(!filename.equals("finished")) {
             try {
                 ByteBuffer size = receiveMessage(2 * Long.BYTES);
-                size = decryptData(size, false);
+                size = decryptData(size);
                 ByteBuffer message = receiveMessage(size.getInt() * Long.BYTES);
-                message = decryptData(message, false);
-                String filename = new String(message.array());
+                message = decryptData(message);
+                filename = new String(message.array());
                 if(filename.equals("finished")) {
+                    sendAck();
                     System.out.println("Connection terminated");
                     continue;
                 }
                 System.out.println("Requesting " + filename);
-                ByteBuffer returnMessage = ByteBuffer.wrap(Files.readAllBytes(Paths.get(filename)));
-                sendMessage(encryptData(ByteBuffer.wrap(Server.ACK.getBytes())));
-                ByteBuffer sizeOfMessage = ByteBuffer.allocate(Integer.BYTES);
-                returnMessage = encryptData(returnMessage);
-                sizeOfMessage.putInt(returnMessage.limit() / Long.BYTES);
-                sendMessage(encryptData(sizeOfMessage));
-                sendMessage(returnMessage);
+                if(Files.exists(Paths.get(filename)) && Paths.get(filename).toAbsolutePath().startsWith(Paths.get("").toAbsolutePath())) {
+                    ByteBuffer returnMessage = ByteBuffer.wrap(Files.readAllBytes(Paths.get(filename)));
+                    sendAck();
+                    ByteBuffer sizeOfMessage = ByteBuffer.allocate(Integer.BYTES);
+                    returnMessage = encryptData(returnMessage);
+                    sizeOfMessage.putInt(returnMessage.limit() / Long.BYTES);
+                    sendMessage(encryptData(sizeOfMessage));
+                    sendMessage(returnMessage);
+                }
+                else {
+                    sendFnf();
+                }
 
             } catch (IOException e) {
-                System.err.println("Something went horribly wrong");
+                System.err.println("Something went horribly wrong or the client disconnected poorly");
+                return;
             }
         }
+    }
+
+    private void sendAck() throws IOException {
+        sendMessage(encryptData(ByteBuffer.wrap(Server.ACK.getBytes())));
+    }
+
+    private void sendFnf() throws IOException {
+        sendMessage(encryptData(ByteBuffer.wrap(Server.FILE_NOT_FOUND.getBytes())));
     }
 }
