@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Paths;
 
 /**
@@ -91,7 +92,7 @@ public class ServerController extends Controller implements Runnable {
                     continue;
                 }
                 System.out.println("Requesting " + filename);
-                if(Files.exists(Paths.get(filename)) && Paths.get(filename).toAbsolutePath().startsWith(Paths.get("").toAbsolutePath())) {
+                if(Files.exists(Paths.get(filename)) && Paths.get(filename).toRealPath(LinkOption.NOFOLLOW_LINKS).startsWith(Paths.get("").toAbsolutePath())) {
                     ByteBuffer returnMessage = ByteBuffer.wrap(Files.readAllBytes(Paths.get(filename)));
                     sendAck();
                     sendMessageWithSize(returnMessage);
