@@ -81,7 +81,6 @@ public class ClientView {
             System.err.println(USAGE);
             System.exit(1);
         }
-
         long[] key = Arrays.stream(args[2].split(",")).mapToLong(Long::parseLong).toArray();
         try {
             ClientView view = new ClientView(args[1], key, args[0]);

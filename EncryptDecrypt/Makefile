@@ -18,7 +18,7 @@ Client.jar: Cryptographer
 	jar -cfev $@ ca.afontaine.ece422.ClientView -C bin .
 
 Server.jar: Cryptographer
-	jar -cfev $@ ca.afontaine.ece422.Server -C bin .
+	jar -cfev $@ ca.afontaine.ece422.ServerService -C bin .
 
 $(TARGET): ca_afontaine_ece422_Cryptographer.o
 	mkdir lib

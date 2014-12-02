@@ -48,15 +48,18 @@ public class Cryptographer {
         return value;
     }
 
-    static public ByteBuffer decrypt(ByteBuffer value, long[] key) {
+    static public ByteBuffer decrypt(ByteBuffer value, long[] key, boolean keyMatch) {
         ByteBuffer newBuffer = ByteBuffer.allocate(value.limit());
         newBuffer.put(value.array());
-        value = newBuffer;
-        decryptMessage(value.array(), key);
-        value.position(0);
-        int size = value.getInt();
-        ByteBuffer message = ByteBuffer.allocate(size);
-        message.put(value.array(), Integer.BYTES, size);
+        decryptMessage(newBuffer.array(), key);
+        newBuffer.position(0);
+        int size = newBuffer.getInt();
+        if(keyMatch && size > 2 * Long.BYTES) {
+            return ByteBuffer.allocate(0);
+        }
+        byte[] mess = new byte[size];
+        newBuffer.get(mess);
+        ByteBuffer message = ByteBuffer.wrap(mess);
         message.position(0);
         return message;
 

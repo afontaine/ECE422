@@ -61,9 +61,9 @@ public class ServerController extends Controller implements Runnable {
         try {
             ByteBuffer message = receiveMessage(2 * Long.BYTES);
             for(long[] key : server.getUsers().keySet()) {
-                if(server.getUsers().containsValue(new String(decryptData(message).array()))) {
+                setClient(new Client(server.getUsers().get(key), key));
+                if(server.getUsers().containsValue(new String(decryptData(message, true).array()))) {
                     sendMessage(encryptData(ByteBuffer.wrap(Server.ACK.getBytes())));
-                    setClient(new Client(server.getUsers().get(key), key));
                     processCommands();
                     break;
                 }
@@ -76,12 +76,12 @@ public class ServerController extends Controller implements Runnable {
 
     private void processCommands() {
         String line = "";
-        while(line.equals("finished")) {
+        while(!line.equals("finished")) {
             try {
                 ByteBuffer size = receiveMessage(2 * Long.BYTES);
-                size = decryptData(size);
-                ByteBuffer message = receiveMessage(size.getInt());
-                message = decryptData(message);
+                size = decryptData(size, false);
+                ByteBuffer message = receiveMessage(size.getInt() * Long.BYTES);
+                message = decryptData(message, false);
                 String filename = new String(message.array());
                 if(filename.equals("finished")) {
                     System.out.println("Connection terminated");
@@ -89,7 +89,11 @@ public class ServerController extends Controller implements Runnable {
                 }
                 System.out.println("Requesting " + filename);
                 ByteBuffer returnMessage = ByteBuffer.wrap(Files.readAllBytes(Paths.get(filename)));
+                sendMessage(encryptData(ByteBuffer.wrap(Server.ACK.getBytes())));
+                ByteBuffer sizeOfMessage = ByteBuffer.allocate(Integer.BYTES);
                 returnMessage = encryptData(returnMessage);
+                sizeOfMessage.putInt(returnMessage.limit() / Long.BYTES);
+                sendMessage(encryptData(sizeOfMessage));
                 sendMessage(returnMessage);
 
             } catch (IOException e) {

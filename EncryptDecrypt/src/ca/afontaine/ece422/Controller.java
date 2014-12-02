@@ -86,17 +86,21 @@ public class Controller {
         return Cryptographer.encrypt(buffer, client.getKey());
     }
 
-    public ByteBuffer decryptData(ByteBuffer buffer) {
-        return Cryptographer.decrypt(buffer, client.getKey());
+    public ByteBuffer decryptData(ByteBuffer buffer, boolean keyMatch) {
+        return Cryptographer.decrypt(buffer, client.getKey(), keyMatch);
     }
 
     public void sendMessage(ByteBuffer buffer) throws IOException {
+        System.out.println("Sending " + buffer.limit() + " bytes");
         out.write(buffer.array());
+        System.out.println(buffer.limit() + " bytes sent");
     }
 
     public ByteBuffer receiveMessage(int size) throws IOException {
         ByteBuffer buf = ByteBuffer.allocate(size);
+        System.out.println("Receiving " + size + " bytes");
         in.readFully(buf.array());
+        System.out.println(size + " bytes received");
         return buf;
     }
 

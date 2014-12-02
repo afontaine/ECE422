@@ -61,23 +61,23 @@ public class ClientController extends Controller {
     }
 
     public void processLine(String line) {
-        ByteBuffer size = ByteBuffer.allocate(2 * Long.BYTES);
+        ByteBuffer size = ByteBuffer.allocate(Integer.BYTES);
         ByteBuffer sending = ByteBuffer.wrap(line.getBytes());
         sending = encryptData(sending);
-        size.putInt(sending.limit());
+        size.putInt(sending.limit() / Long.BYTES);
         size = encryptData(size);
         try {
             sendMessage(size);
             sendMessage(sending);
             ByteBuffer receiving = receiveMessage(2 * Long.BYTES);
-            receiving = decryptData(receiving);
+            receiving = decryptData(receiving, false);
             if(compareBufferWithAck(receiving)) {
                 if(line.equals("finished"))
                     return;
                 receiving = receiveMessage(2 * Long.BYTES);
-                receiving = decryptData(receiving);
-                receiving = receiveMessage(2 * Long.BYTES * receiving.getInt());
-                receiving = decryptData(receiving);
+                receiving = decryptData(receiving, false);
+                receiving = receiveMessage(Long.BYTES * receiving.getInt());
+                receiving = decryptData(receiving, false);
                 Files.write(Paths.get(line), receiving.array());
             }
             else {
@@ -93,7 +93,7 @@ public class ClientController extends Controller {
         sendMessage(login);
 
         login = receiveMessage(2 * Long.BYTES);
-        login = decryptData(login);
+        login = decryptData(login, false);
         if(!compareBufferWithAck(login)) {
             System.err.println("Could not log in. Credentials were wrong.");
             return false;
