@@ -59,14 +59,10 @@ public class ClientController extends Controller {
     }
 
     public void processLine(String line) {
-        ByteBuffer size = ByteBuffer.allocate(Integer.BYTES);
         ByteBuffer sending = ByteBuffer.wrap(line.getBytes());
-        sending = encryptData(sending);
-        size.putInt(sending.limit() / Long.BYTES);
-        size = encryptData(size);
+
         try {
-            sendMessage(size);
-            sendMessage(sending);
+            sendMessageWithSize(sending);
             ByteBuffer receiving = receiveMessage(2 * Long.BYTES);
             receiving = decryptData(receiving);
             if(compareBufferWithAck(receiving)) {

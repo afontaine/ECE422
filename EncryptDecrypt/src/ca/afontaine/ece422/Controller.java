@@ -95,4 +95,12 @@ public class Controller {
     public void close() throws IOException {
         sock.close();
     }
+
+    protected void sendMessageWithSize(ByteBuffer returnMessage) throws IOException {
+        ByteBuffer sizeOfMessage = ByteBuffer.allocate(Integer.BYTES);
+        returnMessage = encryptData(returnMessage);
+        sizeOfMessage.putInt(returnMessage.limit() / Long.BYTES);
+        sendMessage(encryptData(sizeOfMessage));
+        sendMessage(returnMessage);
+    }
 }

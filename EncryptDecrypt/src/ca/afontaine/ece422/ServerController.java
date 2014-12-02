@@ -94,11 +94,7 @@ public class ServerController extends Controller implements Runnable {
                 if(Files.exists(Paths.get(filename)) && Paths.get(filename).toAbsolutePath().startsWith(Paths.get("").toAbsolutePath())) {
                     ByteBuffer returnMessage = ByteBuffer.wrap(Files.readAllBytes(Paths.get(filename)));
                     sendAck();
-                    ByteBuffer sizeOfMessage = ByteBuffer.allocate(Integer.BYTES);
-                    returnMessage = encryptData(returnMessage);
-                    sizeOfMessage.putInt(returnMessage.limit() / Long.BYTES);
-                    sendMessage(encryptData(sizeOfMessage));
-                    sendMessage(returnMessage);
+                    sendMessageWithSize(returnMessage);
                 }
                 else {
                     sendFnf();
