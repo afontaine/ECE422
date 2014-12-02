@@ -83,6 +83,7 @@ public class ClientController extends Controller {
             }
         } catch (IOException e) {
             System.err.println("Unable to connect to server");
+            System.exit(1);
         }
     }
 

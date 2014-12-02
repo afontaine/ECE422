@@ -63,13 +63,13 @@ public class ServerController extends Controller implements Runnable {
             ByteBuffer message = receiveMessage(2 * Long.BYTES);
             for(long[] key : server.getUsers().keySet()) {
                 setClient(new Client(server.getUsers().get(key), key));
-                if(server.getUsers().containsValue(new String(decryptData(message).array()))) {
+                if(getClient().getUser().equals(new String(decryptData(message).array()))) {
                     sendAck();
                     processCommands();
                     return;
                 }
             }
-            sendMessage(ByteBuffer.wrap("User not found".getBytes()));
+            sendMessage(ByteBuffer.wrap("User not found  ".getBytes()));
         } catch (IOException e) {
             e.printStackTrace();
         }

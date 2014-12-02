@@ -54,7 +54,7 @@ public class Cryptographer {
         decryptMessage(newBuffer.array(), key);
         newBuffer.position(0);
         int size = newBuffer.getInt();
-        if(size > value.limit()) {
+        if(size > value.limit() || size < 0) {
             return ByteBuffer.allocate(0);
         }
         byte[] mess = new byte[size];
