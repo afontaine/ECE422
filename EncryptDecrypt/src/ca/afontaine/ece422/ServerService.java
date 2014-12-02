@@ -45,9 +45,9 @@ public class ServerService {
     private static String USAGE = "<file with user and keys> <number of threads>";
 
 
-    ExecutorService service;
-    ServerSocket serverSocket;
-    Server server;
+    private ExecutorService service;
+    private ServerSocket serverSocket;
+    private Server server;
 
     public ServerService(Server server, int threads) throws IOException {
         this.server = server;

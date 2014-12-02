@@ -28,7 +28,6 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
@@ -38,7 +37,7 @@ import java.nio.file.Paths;
  */
 public class ServerController extends Controller implements Runnable {
 
-    Server server;
+    private Server server;
 
     public ServerController(Socket sock, Server server) {
         super();

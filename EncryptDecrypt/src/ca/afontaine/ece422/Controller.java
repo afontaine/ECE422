@@ -36,10 +36,10 @@ import java.nio.ByteBuffer;
 public class Controller {
 
 
-    Client client;
-    Socket sock;
-    DataInputStream in;
-    DataOutputStream out;
+    protected Client client;
+    protected Socket sock;
+    protected DataInputStream in;
+    protected DataOutputStream out;
 
     public Controller() {
 
@@ -82,25 +82,21 @@ public class Controller {
         this.out = out;
     }
 
-    public ByteBuffer encryptData(ByteBuffer buffer) {
+    protected ByteBuffer encryptData(ByteBuffer buffer) {
         return Cryptographer.encrypt(buffer, client.getKey());
     }
 
-    public ByteBuffer decryptData(ByteBuffer buffer) {
+    protected ByteBuffer decryptData(ByteBuffer buffer) {
         return Cryptographer.decrypt(buffer, client.getKey());
     }
 
-    public void sendMessage(ByteBuffer buffer) throws IOException {
-        System.out.println("Sending " + buffer.limit() + " bytes");
+    protected void sendMessage(ByteBuffer buffer) throws IOException {
         out.write(buffer.array());
-        System.out.println(buffer.limit() + " bytes sent");
     }
 
-    public ByteBuffer receiveMessage(int size) throws IOException {
+    protected ByteBuffer receiveMessage(int size) throws IOException {
         ByteBuffer buf = ByteBuffer.allocate(size);
-        System.out.println("Receiving " + size + " bytes");
         in.readFully(buf.array());
-        System.out.println(size + " bytes received");
         return buf;
     }
 

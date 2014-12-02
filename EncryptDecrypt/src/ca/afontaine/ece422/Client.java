@@ -29,8 +29,8 @@ package ca.afontaine.ece422;
  */
 public class Client {
 
-    long[] key;
-    String user;
+    private long[] key;
+    private String user;
 
     public Client(String user, long[] key) {
         this.user = user;

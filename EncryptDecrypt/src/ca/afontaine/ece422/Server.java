@@ -34,7 +34,7 @@ public class Server {
 
     public static String ACK = "ack";
     public static String FILE_NOT_FOUND = "fnf";
-    static int PORT = 16000;
+    public static int PORT = 16000;
 
     HashMap<long[], String> users;
 

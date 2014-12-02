@@ -34,8 +34,8 @@ public class ClientView {
 
     static private String USAGE = "<IP of server> <username> <key>";
 
-    BufferedReader readIn;
-    ClientController controller;
+    private BufferedReader readIn;
+    private ClientController controller;
 
     private String getLine() {
         System.out.print(controller.getClient().getUser() + "$ ");
