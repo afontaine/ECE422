@@ -29,62 +29,31 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.LongSummaryStatistics;
 
 /**
  * @author Andrew Fontaine
  * @version 1.0
  * @since 2014-11-30
  */
-public class ClientController {
-    static int PORT = 16000;
-
-    Client client;
-    Socket sock;
-    DataInputStream in;
-    DataOutputStream out;
+public class ClientController extends Controller {
 
 
     public ClientController(Client client) {
-        this.client = client;
-        sock = new Socket();
-    }
-
-    public Client getClient() {
-        return client;
+        super(client);
     }
 
     public ByteBuffer createLoginMessage() {
-        ByteBuffer message = ByteBuffer.wrap(client.getUser().getBytes());
-        Cryptographer.encrypt(message, client.getKey());
-        return message;
-    }
-
-    public void encryptData(ByteBuffer buffer) {
-        Cryptographer.encrypt(buffer, client.getKey());
-    }
-
-    public void decryptData(ByteBuffer buffer) {
-        Cryptographer.decrypt(buffer, client.getKey());
+        ByteBuffer message = ByteBuffer.wrap(getClient().getUser().getBytes());
+        return encryptData(message);
     }
 
     public void connectSocket(String addr) throws IOException {
-        sock.connect(new InetSocketAddress(addr, PORT));
-        in = new DataInputStream(sock.getInputStream());
-        out = new DataOutputStream(sock.getOutputStream());
-    }
-
-    public void sendMessage(ByteBuffer buffer) throws IOException {
-        out.write(buffer.array());
-    }
-
-    public ByteBuffer recieveMessage(int size) throws IOException {
-        ByteBuffer buf = ByteBuffer.allocate(size);
-        in.readFully(buf.array());
-        return buf;
-    }
-
-    public void close() throws IOException {
-        sock.close();
+        getSock().connect(new InetSocketAddress(addr, Server.PORT));
+        setIn(new DataInputStream(getSock().getInputStream()));
+        setOut(new DataOutputStream(getSock().getOutputStream()));
     }
 
     private boolean compareBufferWithAck(ByteBuffer message) {
@@ -92,20 +61,24 @@ public class ClientController {
     }
 
     public void processLine(String line) {
+        ByteBuffer size = ByteBuffer.allocate(2 * Long.BYTES);
         ByteBuffer sending = ByteBuffer.wrap(line.getBytes());
-        encryptData(sending);
+        sending = encryptData(sending);
+        size.putInt(sending.limit());
+        size = encryptData(size);
         try {
+            sendMessage(size);
             sendMessage(sending);
-            ByteBuffer receiving = recieveMessage(2 * Long.BYTES);
-            decryptData(receiving);
+            ByteBuffer receiving = receiveMessage(2 * Long.BYTES);
+            receiving = decryptData(receiving);
             if(compareBufferWithAck(receiving)) {
                 if(line.equals("finished"))
                     return;
-                receiving = recieveMessage(2 * Long.BYTES);
-                decryptData(receiving);
-                receiving = recieveMessage(2 * Long.BYTES * receiving.getInt());
-                decryptData(receiving);
-                new DataOutputStream(new FileOutputStream(line, false)).write(receiving.array());
+                receiving = receiveMessage(2 * Long.BYTES);
+                receiving = decryptData(receiving);
+                receiving = receiveMessage(2 * Long.BYTES * receiving.getInt());
+                receiving = decryptData(receiving);
+                Files.write(Paths.get(line), receiving.array());
             }
             else {
                 System.err.println("File not found on server");
@@ -117,11 +90,10 @@ public class ClientController {
 
     public boolean login() throws IOException {
         ByteBuffer login = createLoginMessage();
-        encryptData(login);
         sendMessage(login);
 
-        login = recieveMessage(2 * Long.BYTES);
-        decryptData(login);
+        login = receiveMessage(2 * Long.BYTES);
+        login = decryptData(login);
         if(!compareBufferWithAck(login)) {
             System.err.println("Could not log in. Credentials were wrong.");
             return false;

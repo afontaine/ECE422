@@ -49,6 +49,9 @@ public class Cryptographer {
     }
 
     static public ByteBuffer decrypt(ByteBuffer value, long[] key) {
+        ByteBuffer newBuffer = ByteBuffer.allocate(value.limit());
+        newBuffer.put(value.array());
+        value = newBuffer;
         decryptMessage(value.array(), key);
         value.position(0);
         int size = value.getInt();

@@ -55,7 +55,10 @@ public class ClientView {
 
     public void run() {
         try {
-            if (!controller.login()) return;
+            if (!controller.login()) {
+                System.out.println("User not found");
+                return;
+            }
         } catch (IOException e) {
             System.err.println("Could not log in");
             return;

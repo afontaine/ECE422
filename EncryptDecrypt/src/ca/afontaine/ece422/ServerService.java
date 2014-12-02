@@ -1,4 +1,6 @@
 /*
+ * The MIT License (MIT)
+ *
  * Copyright (c) 2014 Andrew Fontaine
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,42 +24,37 @@
 
 package ca.afontaine.ece422;
 
-import java.util.Arrays;
-import java.util.HashMap;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author Andrew Fontaine
  * @version 1.0
- * @since 2014-11-30
+ * @since 2014-12-01
  */
-public class Server {
+public class ServerService {
 
-    public static String ACK = "ack";
-    public static String FILE_NOT_FOUND = "fnf";
-    static int PORT = 16000;
 
-    HashMap<long[], String> users;
+    ExecutorService service;
+    ServerSocket serverSocket;
+    Server server;
 
-    public Server(HashMap<long[], String> users) {
-        this.users = users;
+    public ServerService(Server server) throws IOException {
+        this.server = server;
+        service = Executors.newFixedThreadPool(100);
+        serverSocket = new ServerSocket(Server.PORT);
     }
 
-    public HashMap<long[], String> getUsers() {
-        return users;
-    }
-
-    public void setUsers(HashMap<long[], String> users) {
-        this.users = users;
-    }
-
-    public void addUser(long[] key, String user) {
-        users.put(key, user);
-    }
-
-    public String authenticate(long[] key) {
-        if(users.containsKey(key)) {
-            return users.get(key);
+    public void run() {
+        while(true) {
+            try {
+                service.execute(new ServerController(serverSocket.accept(), server));
+            } catch (IOException e) {
+                service.shutdown();
+            }
         }
-        return null;
     }
 }
