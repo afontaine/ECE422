@@ -22,8 +22,8 @@
 
 package ca.afontaine.ece422;
 
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Set;
 
 /**
  * @author Andrew Fontaine
@@ -36,28 +36,17 @@ public class Server {
     public static String FILE_NOT_FOUND = "fnf";
     public static int PORT = 16000;
 
-    HashMap<long[], String> users;
+    private HashMap<long[], String> users;
 
     public Server(HashMap<long[], String> users) {
         this.users = users;
     }
 
-    public HashMap<long[], String> getUsers() {
-        return users;
+    public Set<long[]> getKeys() {
+        return users.keySet();
     }
 
-    public void setUsers(HashMap<long[], String> users) {
-        this.users = users;
-    }
-
-    public void addUser(long[] key, String user) {
-        users.put(key, user);
-    }
-
-    public String authenticate(long[] key) {
-        if(users.containsKey(key)) {
-            return users.get(key);
-        }
-        return null;
+    public String getUser(long[] key) {
+        return users.getOrDefault(key, "");
     }
 }

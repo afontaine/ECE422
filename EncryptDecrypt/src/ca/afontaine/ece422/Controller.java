@@ -54,31 +54,23 @@ public class Controller {
         return client;
     }
 
-    public void setClient(Client client) {
+    protected void setClient(Client client) {
         this.client = client;
     }
 
-    public Socket getSock() {
+    protected Socket getSock() {
         return sock;
     }
 
-    public void setSock(Socket sock) {
+    protected void setSock(Socket sock) {
         this.sock = sock;
     }
 
-    public DataInputStream getIn() {
-        return in;
-    }
-
-    public void setIn(DataInputStream in) {
+    protected void setIn(DataInputStream in) {
         this.in = in;
     }
 
-    public DataOutputStream getOut() {
-        return out;
-    }
-
-    public void setOut(DataOutputStream out) {
+    protected void setOut(DataOutputStream out) {
         this.out = out;
     }
 

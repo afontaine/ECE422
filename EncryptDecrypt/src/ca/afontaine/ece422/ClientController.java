@@ -43,7 +43,7 @@ public class ClientController extends Controller {
         super(client);
     }
 
-    public ByteBuffer createLoginMessage() {
+    private ByteBuffer createLoginMessage() {
         ByteBuffer message = ByteBuffer.wrap(getClient().getUser().getBytes());
         return encryptData(message);
     }

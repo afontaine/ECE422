@@ -24,7 +24,9 @@
 
 package ca.afontaine.ece422;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
@@ -60,8 +62,8 @@ public class ServerController extends Controller implements Runnable {
         }
         try {
             ByteBuffer message = receiveMessage(2 * Long.BYTES);
-            for(long[] key : server.getUsers().keySet()) {
-                setClient(new Client(server.getUsers().get(key), key));
+            for(long[] key : server.getKeys()) {
+                setClient(new Client(server.getUser(key), key));
                 if(getClient().getUser().equals(new String(decryptData(message).array()))) {
                     sendAck();
                     processCommands();
